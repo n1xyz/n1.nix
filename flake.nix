@@ -1,15 +1,17 @@
 {
-  description = "Various solc versions";
+  description = "Various solc and lsh versions";
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs =
-    inputs@{ flake-parts, nixpkgs, ... }:
+  outputs = inputs@{ flake-parts, nixpkgs, ... }:
     let
-      packagesFor = pkgs: { solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { }; };
+      packagesFor = pkgs: {
+        solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
+        lsh = pkgs.callPackage ./lsh.nix { };
+      };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
