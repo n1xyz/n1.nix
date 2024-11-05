@@ -26,7 +26,8 @@
           ...
         }:
         {
-          devShells.default = pkgs.mkShell { buildInputs = with pkgs; [ solc-0_8_26 ]; };
+          devShells.default = pkgs.mkShell { buildInputs = with pkgs; [ solc-0_8_26 lsh ]; };
+
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
             overlays = [ inputs.layern.overlays.default ];
