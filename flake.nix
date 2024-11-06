@@ -6,13 +6,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
-  outputs =
-    inputs@{ flake-parts, nixpkgs, ... }:
+  outputs = inputs@{ flake-parts, nixpkgs, ... }:
     let
-      # Define the packages for each system architecture
       packagesFor = pkgs: {
         solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
-        lsh = pkgs.callPackage ./lsh.nix {};
+        lsh = pkgs.callPackage ./lsh.nix { inherit (pkgs) buildGoModule fetchurl; };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
