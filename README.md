@@ -45,6 +45,7 @@ Development Shell
 A default development shell with solc-0.8.26 is available:
 
 ```
+cd test
 nix develop
 ```
 

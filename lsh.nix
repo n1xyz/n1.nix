@@ -1,12 +1,25 @@
-{ stdenv, fetchurl, ... }:
+{ stdenv, fetchurl, lib,  ... }:
 
 stdenv.mkDerivation {
-  name = "lsh-2.1";
+  pname = "lsh";
+  version = "1.3.3";
+
   src = fetchurl {
-    url = "https://ftp.gnu.org/gnu/lsh/lsh-2.1.tar.gz";
-    sha256 = "8bbf94b1aa77a02cac1a10350aac599b7aedda61881db16606debeef7ef212e3";
+    url = "https://github.com/latitudesh/lsh/releases/download/v1.3.3/lsh_Darwin_arm64.tar.gz";
+    sha256 = "70550a0e5579acf267df9f24f11c51c1e9eefce003952c754503f95ee567a40d";
   };
 
-  buildInputs = [ /* dependencies */ ];
-  /* additional build or configure steps */
+  nativeBuildInputs = [];
+
+  installPhase = ''
+    mkdir -p $out/bin
+    cp lsh $out/bin/
+    chmod +x $out/bin/lsh
+  '';
+
+  meta = with lib; {
+    description = "Latitude.sh lsh tool v1.3.3";
+    homepage = "https://github.com/latitudesh/lsh";
+    license = licenses.mit;
+  };
 }
