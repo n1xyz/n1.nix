@@ -1,14 +1,6 @@
 # Solidity Compiler Nix Flake
 
-This repository provides a Nix Flake setup for different Solidity compiler (`solc`) versions, with `solc-0.8.26` included as an example. This configuration is optimized for cross-platform use, supporting Linux and macOS architectures.
-
-## Overview
-
-- **Primary Purpose**: Manage and deploy specific versions of the Solidity compiler in a reproducible, cross-platform environment.
-- **Flake Dependencies**:
-  - `flake-parts`: Utilized to streamline the flake structure.
-  - `nixpkgs`: Provides the base system packages for various architectures.
-  - `solc-0.8.26`: Custom package for the Solidity compiler version 0.8.26, based on `nixpkgs` configurations.
+This repository includes packages that we use that are not provided in nixpkgs or that require specific versions.
 
 ## System Compatibility
 
@@ -42,11 +34,9 @@ nix build .#packages.x86_64-linux.solc-0_8_26
 Replace x86_64-linux with the appropriate system architecture if needed.
 
 Development Shell
-A default development shell with solc-0.8.26 is available:
 
 ```
-cd test
-nix develop
+$ nix develop ./test
 ```
 
 This command loads the necessary environment and tools.
@@ -54,8 +44,4 @@ This command loads the necessary environment and tools.
 Future Directions
 
 Expand Compatibility: Add more Solidity versions and compatibility across architectures.
-Testing: Integrate additional tests to validate the cross-platform configurations.
-
-License
-
-Licensed under GPL-3.0, following the original solc license.
+Testing: add CI checks.

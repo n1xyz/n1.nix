@@ -1,6 +1,6 @@
 { lib, buildGoModule, fetchFromGitHub }:
 
-buildGoModulei rec {
+buildGoModule rec {
   pname = "lsh";
   version = "1.3.3";
 

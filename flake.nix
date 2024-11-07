@@ -10,7 +10,7 @@
     let
       packagesFor = pkgs: {
         solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
-        lsh = pkgs.callPackage ./lsh.nix { inherit (pkgs) buildGoModule fetchFromGitHub; };
+        lsh = pkgs.callPackage ./lsh.nix { };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
