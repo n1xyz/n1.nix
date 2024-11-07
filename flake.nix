@@ -21,13 +21,12 @@
         "x86_64-darwin"
       ];
       perSystem =
-        {
-          config,
-          self',
-          inputs',
-          pkgs,
-          system,
-          ...
+        { config
+        , self'
+        , inputs'
+        , pkgs
+        , system
+        , ...
         }:
         {
           packages = packagesFor pkgs;
