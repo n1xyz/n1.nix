@@ -1,4 +1,8 @@
-{ lib, buildGoModule, fetchFromGitHub }:
+{
+  lib,
+  buildGoModule,
+  fetchFromGitHub,
+}:
 
 buildGoModule rec {
   pname = "lsh";
@@ -23,4 +27,3 @@ buildGoModule rec {
     maintainers = with maintainers; [ ];
   };
 }
-
