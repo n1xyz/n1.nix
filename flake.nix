@@ -45,6 +45,8 @@
               ''
                 solc --version
                 lsh --version
+                solana --version
+                solana-test-validator --version
                 mkdir $out
               '';
         };
