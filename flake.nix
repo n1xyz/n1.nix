@@ -46,6 +46,7 @@
                 solc --version
                 lsh --version
                 solana --version
+                cargo-build-sbf --version
                 solana-test-validator --version
                 mkdir $out
               '';

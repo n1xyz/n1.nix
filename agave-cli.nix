@@ -1,9 +1,41 @@
 # Adapted from https://github.com/NixOS/nixpkgs/blob/edf04b75c13c2ac0e54df5ec5c543e300f76f1c9/pkgs/by-name/so/solana-cli/package.nix
+let
+  allSolanaPkgs = [
+    "solana"
+    "solana-faucet"
+    "solana-gossip"
+    "agave-install"
+    "solana-keygen"
+    "solana-log-analyzer"
+    "solana-net-shaper"
+    "agave-validator"
+    "solana-test-validator"
+    "cargo-build-sbf"
+    "cargo-test-sbf"
+    "agave-install-init"
+    "solana-stake-accounts"
+    "solana-tokens"
+    "agave-watchtower"
+    "solana-genesis"
+  ];
+  # dev-context-only-utils
+  # NOTE: keep this in sync with latest https://github.com/anza-xyz/agave/blob/5bcdd4934475fde094ffbddd3f8c4067238dc9b0/scripts/dcou-tainted-packages.sh
+  allSolanaDcouPkgs = [
+    "solana-accounts-bench"
+    "solana-banking-bench"
+    "agave-ledger-tool"
+    "solana-bench-tps"
+    "agave-store-tool"
+    "agave-accounts-hash-cache-tool"
+    "solana-dos"
+  ];
+in
 {
   stdenv,
   fetchFromGitHub,
   lib,
   rustPlatform,
+  rust,
   darwin,
   udev,
   protobuf,
@@ -13,26 +45,8 @@
   pkg-config,
   openssl,
   nix-update-script,
-  # Taken from https://github.com/solana-labs/solana/blob/master/scripts/cargo-install-all.sh#L84
-  solanaPkgs ?
-    [
-      "solana"
-      "solana-bench-tps"
-      "solana-faucet"
-      "solana-gossip"
-      "agave-install"
-      "solana-keygen"
-      "agave-ledger-tool"
-      "solana-log-analyzer"
-      "solana-net-shaper"
-      "agave-validator"
-      "solana-test-validator"
-    ]
-    ++ [
-      # XXX: Ensure `solana-genesis` is built LAST!
-      # See https://github.com/solana-labs/solana/issues/5826
-      "solana-genesis"
-    ],
+  solanaPkgs ? allSolanaPkgs,
+  solanaDcouPkgs ? allSolanaDcouPkgs,
 }:
 let
   version = "2.0.21";
@@ -70,7 +84,7 @@ rustPlatform.buildRustPackage rec {
   };
 
   strictDeps = true;
-  cargoBuildFlags = builtins.map (n: "--bin=${n}") solanaPkgs;
+  #cargoBuildFlags = builtins.map (n: "--bin=${n}") solanaPkgs;
 
   # Even tho the tests work, a shit ton of them try to connect to a local RPC
   # or access internet in other ways, eventually failing due to Nix sandbox.
@@ -99,6 +113,42 @@ rustPlatform.buildRustPackage rec {
       Libsystem
     ];
 
+  buildPhase = ''
+    runHook preBuild
+    (
+      # avoid running the hooks twice
+      unset preBuildHook
+      unset preBuildHooks
+      unset postBuildHook
+      unset postBuildHooks
+
+      ${lib.strings.toShellVar "cargoBuildFlags" (
+        (builtins.map (n: "--bin=${n}") solanaPkgs)
+        ++ [
+          "--workspace"
+        ]
+        ++ (builtins.map (n: "--exclude=${n}") allSolanaDcouPkgs)
+      )}
+      cargoBuildHook
+
+      ${lib.strings.toShellVar "cargoBuildFlags" (builtins.map (n: "--bin=${n}") solanaDcouPkgs)}
+      cargoBuildHook
+
+      ${rust.envVars.setEnv} cargo build \
+          -j "$NIX_BUILD_CORES" \
+          --target "${rust.envVars.rustHostPlatformSpec}" \
+          --offline \
+          --manifest-path programs/bpf_loader/gen-syscall-list/Cargo.toml
+
+      ${rust.envVars.setEnv} cargo run \
+          -j "$NIX_BUILD_CORES" \
+          --target "${rust.envVars.rustHostPlatformSpec}" \
+          --offline \
+          --bin gen-headers
+    )
+    runHook postBuild
+  '';
+
   postInstall = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
     installShellCompletion --cmd solana \
       --bash <($out/bin/solana completion --shell bash) \
@@ -106,6 +156,9 @@ rustPlatform.buildRustPackage rec {
 
     mkdir -p $out/bin/sdk/bpf
     cp -a ./sdk/bpf/* $out/bin/sdk/bpf/
+
+    mkdir -p $out/bin/sdk/sbf
+    cp -a ./sdk/sbf/* $out/bin/sdk/sbf/
   '';
 
   # Used by build.rs in the rocksdb-sys crate. If we don't set these, it would
