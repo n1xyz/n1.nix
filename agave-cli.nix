@@ -45,22 +45,16 @@ in
   pkg-config,
   openssl,
   nix-update-script,
+  agave-platform-tools,
   solanaPkgs ? allSolanaPkgs,
   solanaDcouPkgs ? allSolanaDcouPkgs,
 }:
 let
-  version = "2.0.21";
-  hash = "sha256-XmkWdJQXT8VFadfY675qs98MwlHjX8DkZLD9x6nrOWE=";
+  # https://github.com/anza-xyz/agave/pull/4061
+  version = "eec244f";
+  hash = "sha256-m+o2aadRI2/nOu+KP/ryDMPkV3+4DpgvT81SS17avyA=";
   # NOTE: should be 8.10.0, but let's try 8.11.0 for now
   rocksdb = rocksdb_8_11;
-
-  inherit (darwin.apple_sdk_11_0) Libsystem;
-  inherit (darwin.apple_sdk_11_0.frameworks)
-    System
-    IOKit
-    AppKit
-    Security
-    ;
 in
 rustPlatform.buildRustPackage rec {
   pname = "solana-cli";
@@ -69,7 +63,7 @@ rustPlatform.buildRustPackage rec {
   src = fetchFromGitHub {
     owner = "anza-xyz";
     repo = "agave";
-    rev = "v${version}";
+    rev = "${version}";
     inherit hash;
   };
 
@@ -79,12 +73,10 @@ rustPlatform.buildRustPackage rec {
     outputHashes = {
       "crossbeam-epoch-0.9.5" = "sha256-Jf0RarsgJiXiZ+ddy0vp4jQ59J9m0k3sgXhWhCdhgws=";
       "tokio-1.29.1" = "sha256-Z/kewMCqkPVTXdoBcSaFKG5GSQAdkdpj3mAzLLCjjGk=";
-      "curve25519-dalek-3.2.1" = "sha256-4MF/qaP+EhfYoRETqnwtaCKC1tnUJlBCxeOPCnKrTwQ=";
     };
   };
 
   strictDeps = true;
-  #cargoBuildFlags = builtins.map (n: "--bin=${n}") solanaPkgs;
 
   # Even tho the tests work, a shit ton of them try to connect to a local RPC
   # or access internet in other ways, eventually failing due to Nix sandbox.
@@ -97,21 +89,24 @@ rustPlatform.buildRustPackage rec {
     installShellFiles
     protobuf
     pkg-config
+    rustPlatform.bindgenHook
+    agave-platform-tools
   ];
   buildInputs =
-    [
-      openssl
-      rustPlatform.bindgenHook
-    ]
+    [ openssl ]
     ++ lib.optionals stdenv.hostPlatform.isLinux [ udev ]
-    ++ lib.optionals stdenv.hostPlatform.isDarwin [
-      libcxx
-      IOKit
-      Security
-      AppKit
-      System
-      Libsystem
-    ];
+    ++ lib.optionals stdenv.hostPlatform.isDarwin (
+      [
+        libcxx
+      ]
+      ++ (with darwin.apple_sdk_11_0; [
+        frameworks.IOKit
+        frameworks.Security
+        frameworks.AppKit
+        frameworks.System
+        Libsystem
+      ])
+    );
 
   buildPhase = ''
     runHook preBuild
@@ -124,9 +119,7 @@ rustPlatform.buildRustPackage rec {
 
       ${lib.strings.toShellVar "cargoBuildFlags" (
         (builtins.map (n: "--bin=${n}") solanaPkgs)
-        ++ [
-          "--workspace"
-        ]
+        ++ [ "--workspace" ]
         ++ (builtins.map (n: "--exclude=${n}") allSolanaDcouPkgs)
       )}
       cargoBuildHook
@@ -154,11 +147,11 @@ rustPlatform.buildRustPackage rec {
       --bash <($out/bin/solana completion --shell bash) \
       --fish <($out/bin/solana completion --shell fish)
 
-    mkdir -p $out/bin/sdk/bpf
-    cp -a ./sdk/bpf/* $out/bin/sdk/bpf/
-
     mkdir -p $out/bin/sdk/sbf
     cp -a ./sdk/sbf/* $out/bin/sdk/sbf/
+
+    mkdir -p $out/bin/sdk/sbf/dependencies/platform-tools
+    cp -a ${agave-platform-tools}/* $out/bin/sdk/sbf/dependencies/platform-tools
   '';
 
   # Used by build.rs in the rocksdb-sys crate. If we don't set these, it would
