@@ -62,6 +62,9 @@ let
       "libedit.so.2"
       "libpython3.10.so.1.0"
     ];
+    # We need to preserve metadata in .rlib, which might get stripped on macOS.
+    # See https://github.com/NixOS/nixpkgs/issues/218712
+    stripExclude = [ "*.rlib" ];
     sourceRoot = ".";
     unpackPhase = ''
       tar -xjf $src
@@ -80,6 +83,9 @@ agave-platform-tools
     pname = "agave-platform-tools-llvm";
     inherit version;
     src = agave-platform-tools;
+    # We need to preserve metadata in .rlib, which might get stripped on macOS.
+    # See https://github.com/NixOS/nixpkgs/issues/218712
+    stripExclude = [ "*.rlib" ];
     buildInputs = [ agave-platform-tools ];
     installPhase = ''
       cp -a $src/llvm $out
@@ -89,6 +95,9 @@ agave-platform-tools
     pname = "agave-platform-tools-rust";
     inherit version;
     src = agave-platform-tools;
+    # We need to preserve metadata in .rlib, which might get stripped on macOS.
+    # See https://github.com/NixOS/nixpkgs/issues/218712
+    stripExclude = [ "*.rlib" ];
     buildInputs = [ agave-platform-tools ];
     installPhase = ''
       cp -a $src/rust $out
