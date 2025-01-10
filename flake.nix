@@ -9,10 +9,13 @@
   outputs =
     inputs@{ flake-parts, nixpkgs, ... }:
     let
-      packagesFor = pkgs: {
+      packagesFor = pkgs: rec {
         solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
         lsh = pkgs.callPackage ./lsh.nix { };
-        agave-cli = pkgs.callPackage ./agave-cli.nix { };
+        agave-platform-tools = pkgs.callPackage ./agave-platform-tools.nix { };
+        agave-cli = pkgs.callPackage ./agave-cli.nix {
+          inherit agave-platform-tools;
+        };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
