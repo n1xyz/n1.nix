@@ -41,6 +41,7 @@ in
   protobuf,
   libcxx,
   rocksdb_8_11,
+  makeWrapper,
   installShellFiles,
   pkg-config,
   openssl,
@@ -91,6 +92,7 @@ rustPlatform.buildRustPackage rec {
 
   nativeBuildInputs = [
     installShellFiles
+    makeWrapper
     protobuf
     pkg-config
     rustPlatform.bindgenHook
@@ -156,6 +158,12 @@ rustPlatform.buildRustPackage rec {
 
     mkdir -p $out/bin/sdk/sbf/dependencies/platform-tools
     cp -a ${agave-platform-tools}/* $out/bin/sdk/sbf/dependencies/platform-tools
+  '';
+
+  postFixup = ''
+    # This rustc supports the necesary sbf-solana-solana target.
+    wrapProgram $out/bin/cargo-build-sbf \
+      --set-default RUSTC "${agave-platform-tools}/rust/bin/rustc"
   '';
 
   # Used by build.rs in the rocksdb-sys crate. If we don't set these, it would
