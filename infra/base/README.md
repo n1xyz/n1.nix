@@ -1,0 +1,1 @@
+Script to setup base NixOs image into Latitudesh via iPXE stored at Backblaze

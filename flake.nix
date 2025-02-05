@@ -37,9 +37,10 @@
         {
           packages = packagesFor pkgs;
           formatter = pkgs.nixfmt-rfc-style;
-          devShells.default = pkgs.mkShell {
+          devShells = {
+            default = pkgs.mkShell {
             buildInputs = builtins.attrValues self'.packages;
-          };
+          };};
           checks.build-all =
             pkgs.runCommand "build-all"
               {
@@ -60,6 +61,18 @@
         nixConfig = {
           extra-substituters = [ "https://n1.cachix.org" ];
           extra-trusted-public-keys = [ "n1.cachix.org-1:vQ3RpPAz7vsJCg0PIWXYuzG+RrgV4fJ1uQkuEvcUfQI=" ];
+        };
+
+        nixosConfigurations = {
+          base = inputs.nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+                ./infra/base/base.nix
+            ];
+
+# nix build --impure .\#nixosConfigurations.base.config.system.build.kernel .\#nixosConfigurations.base.config.system.build.netbootRamdisk .\#nixosConfigurations.base.config.system.build.netbootIpxeScript
+# nix build --impure .#nixosConfigurations.base.config.system.build.netbootIpxeScript
+          };
         };
       };
     };
