@@ -8,15 +8,20 @@ terraform {
 }
 
 provider "b2" {
+
 }
 
-resource "b2_bucket" "base" {
-  bucket_name = "base"
+resource "b2_bucket" "base-image" {
+  bucket_name = "base-image"
   bucket_type = "allPublic"
 }
 
 resource "b2_bucket_file_version" "ipxe" {
-    bucket_id = b2_bucket.base.id
+    bucket_id = b2_bucket.base-image.id
     file_name = "base.ipxe"
     source = file("${path.module}/../../result/netboot.ipxe")
+}
+
+output "ipxe_url" {
+    value = b2_bucket_file_version.ipxe.id
 }
