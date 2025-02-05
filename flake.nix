@@ -7,7 +7,12 @@
   };
 
   outputs =
-    inputs@{ flake-parts, nixpkgs, ... }:
+    inputs@{
+      flake-parts,
+      nixpkgs,
+      self,
+      ...
+    }:
     let
       packagesFor = pkgs: rec {
         solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
@@ -16,6 +21,26 @@
         agave-cli = pkgs.callPackage ./agave-cli.nix {
           inherit agave-platform-tools;
         };
+        base =
+          let
+            config = self.nixosConfigurations.base.config.system.build;
+            kernelTarget = pkgs.stdenv.hostPlatform.linux-kernel.target;
+          in
+          pkgs.symlinkJoin {
+            name = "base";
+            paths = [
+              config.netbootRamdisk
+              config.kernel
+              config.netbootIpxeScript
+            ];
+            postBuild = ''
+              mkdir -p $out/nix-support
+              echo "file ${kernelTarget} ${config.kernel}/${kernelTarget}" >> $out/nix-support/build-products
+              echo "file initrd ${config.netbootRamdisk}/initrd" >> $out/nix-support/build-products
+              echo "file ipxe ${config.netbootIpxeScript}/netboot.ipxe" >> $out/nix-support/build-products
+            '';
+
+          };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -34,13 +59,21 @@
           system,
           ...
         }:
+        let
+          cloud = [
+            pkgs.opentofu
+            pkgs.backblaze-b2
+            
+          ];
+        in
         {
           packages = packagesFor pkgs;
           formatter = pkgs.nixfmt-rfc-style;
           devShells = {
             default = pkgs.mkShell {
-            buildInputs = builtins.attrValues self'.packages;
-          };};
+              buildInputs = (builtins.attrValues self'.packages) ++ cloud;
+            };
+          };
           checks.build-all =
             pkgs.runCommand "build-all"
               {
@@ -54,6 +87,18 @@
                 solana-test-validator --version
                 mkdir $out
               '';
+          apps = {
+            build-base = {
+              type = "app";
+              program = pkgs.writeShellApplication {
+                name = "build-base";
+                runtimeInputs = [ pkgs.opentofu ];
+                text = ''
+
+                '';
+              };
+            };
+          };
         };
       flake = {
         overlays.default = final: prev: packagesFor prev;
@@ -67,11 +112,9 @@
           base = inputs.nixpkgs.lib.nixosSystem {
             system = "x86_64-linux";
             modules = [
-                ./infra/base/base.nix
+              ./infra/base/base.nix
             ];
 
-# nix build --impure .\#nixosConfigurations.base.config.system.build.kernel .\#nixosConfigurations.base.config.system.build.netbootRamdisk .\#nixosConfigurations.base.config.system.build.netbootIpxeScript
-# nix build --impure .#nixosConfigurations.base.config.system.build.netbootIpxeScript
           };
         };
       };
