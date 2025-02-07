@@ -12,9 +12,12 @@
     environment = {
       systemPackages = [
         pkgs.curl
-        pkgs.nano        
+        pkgs.nano
+        pkgs.util-linux
+        pkgs.curl
       ];
     };
+
     nix.settings = {
       substituters = [
         "https://nix-community.cachix.org/"
@@ -32,15 +35,26 @@
         "flakes"
       ];
     };
-    services.openssh.enable = true;
+    services.openssh = {
+      enable = true;
+      settings.PasswordAuthentication = false;
+      settings.PermitRootLogin = "no";
+    };
     services.sshd.enable = true;
+
+
+    security.sudo = {
+      enable = true;
+      wheelNeedsPassword = false;
+    };
+
     users.users.n1 = {
       isNormalUser = true;
       home = "/home/n1";
       extraGroups = [
         "wheel"
       ];
-      password="";
+      password = "";
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO/PGg+j/Y5gP/e7zyMCyK+f0YfImZgKZ3IUUWmkoGtT dzmitry@nullstudios.xyz"
       ];

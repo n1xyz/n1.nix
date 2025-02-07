@@ -1,4 +1,4 @@
-# config used to install full system from iPXE RAM boot
+/* Run from iPXE. Used to install full system from iPXE RAM boot */
 {
   config,
   lib,
@@ -8,7 +8,18 @@
   pkgs,
 }:
 {
-  config = {
+  config =
+  let path = with pkgs; [
+        curl
+        disko
+        iproute2
+        jq
+        nix
+        nixos-install-tools
+        util-linux
+      ];
+      in
+   {
     environment = {
       etc = {
         nixos-qemu = {
@@ -21,36 +32,25 @@
         };
       };
       systemPackages = [
-        pkgs.curl
-        pkgs.disko
-        pkgs.git
-        pkgs.nano
-        pkgs.nix
-        pkgs.nixos-install-tools
-        pkgs.util-linux
-      ];
+        
+      ] ++ path;
     };
+
+    boot.loader.grub = {
+      enable = true;
+      version = 2;
+      device = "/dev/vda";
+    };
+    
     systemd.services.nixos-install = {
       wantedBy = [ "multi-user.target" ];
-      path = with pkgs; [
-        curl
-        disko
-        iproute2
-        jq
-        nix
-        nixos-install-tools
-        util-linux
-      ];
+      path = path;
       serviceConfig = {
         Type = "simple";
         Restart = "on-failure";
         RestartSec = "30s";
       };
       script = ''
-        whoami
-        # just to ensure that machine can download files and clone git repos if as needed, and have general access to inet
-        curl https://status.backblaze.com/ | head -n 20
-        curl https://www.githubstatus.com/api/v2/status.json | head -n 20
         nixos-generate-config --root /tmp/config --no-filesystems --force
         cp /etc/nixos/qemu/flake.nix /tmp/config/etc/nixos/
         cp /etc/nixos/shared.nix /tmp/config/etc/nixos/
