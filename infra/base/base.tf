@@ -104,4 +104,6 @@ qemu-system-x86_64   -m 4096   -kernel result-2/bzImage   -initrd result-2/initr
 
 qemu-img create -f qcow2 ssd.qcow2 40G
 
-qemu-system-x86_64   -enable-kvm   -drive file=ssd.qcow2,if=virtio,discard=on,cache=none -m 4096   -kernel result/bzImage   -initrd result/initrd   -append "console=ttyS0 root=/dev/ram0 rw init=/nix/store/zps978gn5i4yhav47qzaqz260lnml39m-nixos-system-nixos-24.11.20241231.edf04b7/init initrd=initrd nohibernate loglevel=4 "   -nographic
+qemu-system-x86_64   -enable-kvm -drive "file=ssd.qcow2,if=virtio,discard=on,cache=none" -device "virtio-blk-pci,drive=drive1" -m 4096   -kernel result/bzImage   -initrd result/initrd   -append "console=ttyS0 root=/dev/ram0 rw init=/nix/store/hnhmjka9iwac25r9kjz3df9igg9zksb2-nixos-system-nixos-24.11.20241231.edf04b7/init initrd=initrd nohibernate loglevel=4 "   -nographic
+
+qemu-system-x86_64   -enable-kvm -drive "file=ssd.qcow2,if=virtio,discard=on,cache=none" -m 4096   -kernel result/bzImage   -initrd result/initrd   -append "console=ttyS0 root=/dev/ram0 rw init=/nix/store/hnhmjka9iwac25r9kjz3df9igg9zksb2-nixos-system-nixos-24.11.20241231.edf04b7/init initrd=initrd nohibernate loglevel=4 "   -nographic
