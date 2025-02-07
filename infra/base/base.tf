@@ -97,7 +97,11 @@ resource "latitudesh_server" "server" {
   tags = [] # must use, beause auto is [], not null
 }
 
+# TODO: wrap this into nix qemu test (same thing but declarative)
+
 
 qemu-system-x86_64   -m 4096   -kernel result-2/bzImage   -initrd result-2/initrd.img   -append "console=ttyS0 root=/dev/ram0 rw init=/nix/store/87kznggrn3pig59r1fik9irii182bh37-nixos-system-nixos-24.11beta708350.1d95cb5/init initrd=initrd-x86_64-linux nohibernate loglevel=4 "   -nographic
 
-qemu-system-x86_64   -m 4096   -kernel result/bzImage   -initrd result/initrd   -append "console=ttyS0 root=/dev/ram0 rw init=/nix/store/k6k1x4g20ny06hd35p5djngjs79ah9pa-nixos-system-nixos-24.11.20241231.edf04b7/init initrd=initrd nohibernate loglevel=4 "   -nographic
+qemu-img create -f qcow2 ssd.qcow2 20G
+
+qemu-system-x86_64   -m 4096   -kernel result/bzImage   -initrd result/initrd   -append "console=ttyS0 root=/dev/ram0 rw init=/nix/store/k6k1x4g20ny06hd35p5djngjs79ah9pa-nixos-system-nixos-24.11.20241231.edf04b7/init initrd=initrd nohibernate loglevel=4 "   -nographic -hda /dev/sda

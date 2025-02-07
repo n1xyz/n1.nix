@@ -15,6 +15,7 @@
       flake-parts,
       nixpkgs,
       self,
+      disko,
       ...
     }:
     let
@@ -117,8 +118,8 @@
             system = "x86_64-linux";
             modules = [
               ./infra/base/base.nix
+              disko.nixosModules.disko
             ];
-
           };
         };
       };

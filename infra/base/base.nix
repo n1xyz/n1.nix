@@ -9,5 +9,6 @@ with lib;
 {
   imports = [
     "${modulesPath}/installer/netboot/netboot-minimal.nix"
+    ./disko.nix
   ];
 }
