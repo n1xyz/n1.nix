@@ -1,12 +1,18 @@
 
 {
-  inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-  inputs.disko.url = "github:nix-community/disko/latest";
-  inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
+  # ideally we should use exactly same commits as initrd image (should we use iso?)
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    disko = {
+      url =  "github:nix-community/disko/v1.11.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
 
   outputs = { self, disko, nixpkgs }: {
     nixosConfigurations.default = nixpkgs.legacyPackages.x86_64-linux.nixos [
       ./configuration.nix
+      ./shared.nix
       disko.nixosModules.disko
       {
         disko.devices = {

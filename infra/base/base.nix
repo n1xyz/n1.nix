@@ -9,6 +9,7 @@ with lib;
 {
   imports = [
     "${modulesPath}/installer/netboot/netboot-minimal.nix"
+    ./shared.nix
     ./install.nix
   ];
 }
