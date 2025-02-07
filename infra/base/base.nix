@@ -8,7 +8,6 @@
 with lib;
 {
   imports = [
-    "${modulesPath}/profiles/minimal.nix"
-    "${modulesPath}/installer/netboot/netboot.nix"
+    "${modulesPath}/installer/netboot/netboot-minimal.nix"
   ];
 }
