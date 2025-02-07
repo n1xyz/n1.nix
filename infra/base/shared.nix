@@ -11,10 +11,8 @@
   config = {
     environment = {
       systemPackages = [
-        pkgs.disko
         pkgs.curl
-        pkgs.git
-        pkgs.nano
+        pkgs.nano        
       ];
     };
     nix.settings = {
@@ -42,6 +40,7 @@
       extraGroups = [
         "wheel"
       ];
+      password="";
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO/PGg+j/Y5gP/e7zyMCyK+f0YfImZgKZ3IUUWmkoGtT dzmitry@nullstudios.xyz"
       ];

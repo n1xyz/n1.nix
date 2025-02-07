@@ -20,18 +20,31 @@
           target = "nixos/shared.nix";
         };
       };
+      systemPackages = [
+        pkgs.curl
+        pkgs.disko
+        pkgs.git
+        pkgs.nano
+        pkgs.nix
+        pkgs.nixos-install-tools
+        pkgs.util-linux
+      ];
     };
     systemd.services.nixos-install = {
       wantedBy = [ "multi-user.target" ];
       path = with pkgs; [
-        iproute2
         curl
+        disko
+        iproute2
         jq
+        nix
+        nixos-install-tools
+        util-linux
       ];
       serviceConfig = {
         Type = "simple";
         Restart = "on-failure";
-        RestartSec = "10s";
+        RestartSec = "30s";
       };
       script = ''
         whoami
@@ -41,7 +54,7 @@
         nixos-generate-config --root /tmp/config --no-filesystems --force
         cp /etc/nixos/qemu/flake.nix /tmp/config/etc/nixos/
         cp /etc/nixos/shared.nix /tmp/config/etc/nixos/
-        sudo disko-install --flake '/tmp/config/etc/nixos#default' --disk main /dev/vda
+        disko-install --flake '/tmp/config/etc/nixos#default' --disk main /dev/vda
       '';
     };
   };
