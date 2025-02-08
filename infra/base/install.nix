@@ -59,8 +59,15 @@
 
         ] ++ path;
       };
-      systemd.services.nixos-install = {
-        requires = [ "network-online.target" ]; # if failed to be online, do not start this one
+      environment.loginShellInit = ''
+        sudo systemctl start nixos-install
+      '';
+      environment.shellInit = ''
+        sudo systemctl start nixos-install
+      '';
+      systemd.user.services.nixos-install = {
+        wantedBy = [ "network-online.target" ];
+        after = [ "network-online.target" ];
         path = path;
         enable = true;
         serviceConfig = {
