@@ -6,6 +6,7 @@
   options,
   modulesPath,
   pkgs,
+  inputs,
 }:
 {
   config =
@@ -34,14 +35,17 @@
       ]; # ++ builtins.map (i: i.outPath) (builtins.attrValues self.inputs);
 
       closureInfo = pkgs.closureInfo {
-        rootPaths = path ++ [
-          pkgs.nano
-          pkgs.perlPackages.ConfigIniFiles
-          pkgs.perlPackages.FileSlurp
-          pkgs.stdenv
-          # config.system.build.toplevel
+        rootPaths =
+          path
+          ++ [
+            pkgs.nano
+            pkgs.perlPackages.ConfigIniFiles
+            pkgs.perlPackages.FileSlurp
+            pkgs.stdenv
+            # config.system.build.toplevel
             # (self.nixosConfigurations.base.pkgs.closureInfo { rootPaths = [ ]; }).drvPath
-        ];
+          ]
+          ++ builtins.map (i: i.outPath) (builtins.attrValues specialArgs.inputs);
       };
 
     in
@@ -63,12 +67,10 @@
 
         ] ++ path;
       };
-          # services = {
-          #   getty.autologinUser = "nixos";
-          # };
       systemd.services.nixos-install = {
         wantedBy = [ "multi-user.target" ];
         path = path;
+        enable = true;
         serviceConfig = {
           Type = "simple";
           Restart = "on-failure";

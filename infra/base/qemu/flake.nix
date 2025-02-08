@@ -49,7 +49,7 @@
         }
         {
           services = {
-            getty.autologinUser = "nixos";
+            getty.autologinUser = "n1";
           };
           boot.loader.grub = {
             enable = true;

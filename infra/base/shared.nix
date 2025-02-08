@@ -6,6 +6,7 @@
   options,
   modulesPath,
   pkgs,
+  inputs,
 }:
 {
   config = {
@@ -33,7 +34,10 @@
         "nix-command"
         "flakes"
       ];
-      trusted-users = [ "nixos" "n1" ];
+      trusted-users = [
+        "nixos"
+        "n1"
+      ];
     };
     services.openssh = {
       enable = true;
@@ -41,16 +45,12 @@
       settings.PermitRootLogin = "yes";
     };
     services.sshd.enable = true;
-    #     services = {
-    #       getty.autologinUser = "nixos";
-    # };
     security.sudo = {
       enable = true;
       wheelNeedsPassword = false;
     };
-    # users.users.root.initialHashedPassword = "";
-    # users.users.nixos.initialHashedPassword = "";
-    # security.polkit.enable = true;
+    users.users.root.initialHashedPassword = "";
+    security.polkit.enable = true;
 
     users.users.n1 = {
       isNormalUser = true;
