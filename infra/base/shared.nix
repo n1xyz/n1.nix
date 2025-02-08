@@ -41,16 +41,16 @@
       settings.PermitRootLogin = "yes";
     };
     services.sshd.enable = true;
-    services = {
-          getty.autologinUser = "nixos";
-    };
+    #     services = {
+    #       getty.autologinUser = "nixos";
+    # };
     security.sudo = {
       enable = true;
       wheelNeedsPassword = false;
     };
-    users.users.root.initialHashedPassword = "";
-    users.users.nixos.initialHashedPassword = "";
-    security.polkit.enable = true;
+    # users.users.root.initialHashedPassword = "";
+    # users.users.nixos.initialHashedPassword = "";
+    # security.polkit.enable = true;
 
     users.users.n1 = {
       isNormalUser = true;

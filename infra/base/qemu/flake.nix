@@ -18,7 +18,7 @@
       nixosConfigurations.default = nixpkgs.legacyPackages.x86_64-linux.nixos [
         ./configuration.nix
         ./shared.nix
-        <nixpkgs/modules/profiles/qemu-guest.nix>
+        # "${modulesPath}/modules/profiles/qemu-guest.nix"
         disko.nixosModules.disko
         {
           disko.devices = {
@@ -48,6 +48,9 @@
           };
         }
         {
+          services = {
+            getty.autologinUser = "nixos";
+          };
           boot.loader.grub = {
             enable = true;
             timeout = 3;
