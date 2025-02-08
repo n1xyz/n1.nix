@@ -14,7 +14,6 @@
         pkgs.curl
         pkgs.nano
         pkgs.util-linux
-        pkgs.curl
       ];
     };
 
@@ -34,19 +33,24 @@
         "nix-command"
         "flakes"
       ];
+      trusted-users = [ "nixos" "n1" ];
     };
     services.openssh = {
       enable = true;
       settings.PasswordAuthentication = false;
-      settings.PermitRootLogin = "no";
+      settings.PermitRootLogin = "yes";
     };
     services.sshd.enable = true;
-
-
+    services = {
+          getty.autologinUser = "nixos";
+    };
     security.sudo = {
       enable = true;
       wheelNeedsPassword = false;
     };
+    users.users.root.initialHashedPassword = "";
+    users.users.nixos.initialHashedPassword = "";
+    security.polkit.enable = true;
 
     users.users.n1 = {
       isNormalUser = true;
@@ -54,7 +58,7 @@
       extraGroups = [
         "wheel"
       ];
-      password = "";
+      initialHashedPassword = "";
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO/PGg+j/Y5gP/e7zyMCyK+f0YfImZgKZ3IUUWmkoGtT dzmitry@nullstudios.xyz"
       ];

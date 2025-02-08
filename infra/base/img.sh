@@ -1,0 +1,1 @@
+qemu-img create -f qcow2 ssd.qcow2 40G

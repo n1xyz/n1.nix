@@ -18,6 +18,7 @@
       nixosConfigurations.default = nixpkgs.legacyPackages.x86_64-linux.nixos [
         ./configuration.nix
         ./shared.nix
+        <nixpkgs/modules/profiles/qemu-guest.nix>
         disko.nixosModules.disko
         {
           disko.devices = {
@@ -51,6 +52,7 @@
             enable = true;
             timeout = 3;
             default = "0";
+            splashImage = null;
           };
         }
       ];
