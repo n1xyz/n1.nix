@@ -51,9 +51,9 @@
           services = {
             getty.autologinUser = "n1";
           };
+          boot.loader.timeout = 1;
           boot.loader.grub = {
             enable = true;
-            timeout = 3;
             default = "0";
             splashImage = null;
           };

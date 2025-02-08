@@ -72,6 +72,16 @@
           ];
         in
         {
+          _module.args.pkgs = import self.inputs.nixpkgs {
+            inherit system;
+            overlays = with self.inputs; [
+              (final: prev: {
+                disko = disko;
+                disko-install = disko.disko-install;
+              })
+
+            ];
+          };
           packages = packagesFor pkgs;
           formatter = pkgs.nixfmt-rfc-style;
           devShells = {
@@ -114,9 +124,9 @@
         };
 
         nixosConfigurations = {
-          base = inputs.nixpkgs.lib.nixosSystem {
+          base = inputs.nixpkgs.lib.nixosSystem rec {
             system = "x86_64-linux";
-            specialArgs = { inherit inputs; };
+            specialArgs = { inherit inputs system self; };
             modules = [
               ./infra/base/base.nix
               disko.nixosModules.disko

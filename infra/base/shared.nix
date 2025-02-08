@@ -7,6 +7,8 @@
   modulesPath,
   pkgs,
   inputs,
+  system,
+  self,
 }:
 {
   config = {
