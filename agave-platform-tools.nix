@@ -13,7 +13,7 @@
   udev,
 }:
 let
-  version = "1.43";
+  version = "1.44";
 
   src =
     let
