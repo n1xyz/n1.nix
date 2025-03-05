@@ -25,7 +25,7 @@ let
       {
         "x86_64-linux" = {
           url = url "linux-x86_64";
-          sha256 = "sha256-844IFgKVsPdtKnNpETccWs9thjHhBK1aw8SajZRLZUE=";
+          sha256 = "sha256:1sdk12l6fjpqx7px5vckn05gw6hs8il2zj7lzjiahxq6ss4vh6b7";
         };
         "aarch64-darwin" = {
           url = url "osx-aarch64";
