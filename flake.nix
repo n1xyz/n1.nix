@@ -12,6 +12,7 @@
       packagesFor = pkgs: rec {
         solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
         lsh = pkgs.callPackage ./lsh.nix { };
+        spl-token = pkgs.callPackage ./spl-token.nix { };
         agave-platform-tools = pkgs.callPackage ./agave-platform-tools.nix { };
         agave-cli = pkgs.callPackage ./agave-cli.nix {
           inherit agave-platform-tools;
@@ -51,6 +52,7 @@
                 solana --version
                 cargo-build-sbf --version
                 solana-test-validator --version
+                spl-token --version
                 mkdir $out
               '';
         };
