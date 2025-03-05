@@ -33,7 +33,7 @@ let
         };
         "x86_64-darwin" = {
           url = url "osx-x86_64";
-          sha256 = "sha256:0jsd9938kfyx972730hfh089fkgjl8iwrdd74spbn4lr8ncckn98";
+          sha256 = "sha256-844IFgKVsPdtKnNpETccWs9thjHhBK1aw8SajZRLZUE=";
         };
         "aarch64-linux" = {
           url = url "linux-aarch64";
