@@ -25,11 +25,11 @@ let
       {
         "x86_64-linux" = {
           url = url "linux-x86_64";
-          sha256 = "sha256:1xm89jk7bybyydal0bdss6ss07pr90xa19fhwbpghjs8l1s72jbs";
+          sha256 = "sha256:1sdk12l6fjpqx7px5vckn05gw6hs8il2zj7lzjiahxq6ss4vh6b7";
         };
         "aarch64-darwin" = {
           url = url "osx-aarch64";
-          sha256 = "sha256:0s9f99c0sy09gx2hq4d5qlwc4p3mxy0bjc8yza7wi0c7hrvq6v6z";
+          sha256 = "sha256:0lckswxb4vbm4c7ab4yzmvwmfabn1lrgzxxs37shzmyxbw9hvqk6";
         };
         "x86_64-darwin" = {
           url = url "osx-x86_64";
@@ -37,7 +37,7 @@ let
         };
         "aarch64-linux" = {
           url = url "linux-aarch64";
-          sha256 = "sha256:0q9ihr5xn2lb8nbl0jwapp2958hl9nx3jxs3pdrhvng4i7h5mqx3";
+          sha256 = "sha256:13ckf763pvkpnz1nail6bkg2n0zh4mrzj9nixir5y3c5xvq6nx1m";
         };
       }
       .${stdenv.hostPlatform.system};
