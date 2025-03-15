@@ -17,6 +17,7 @@
         agave-cli = pkgs.callPackage ./agave-cli.nix {
           inherit agave-platform-tools;
         };
+        shank = pkgs.callPackage ./shank.nix { };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -53,6 +54,7 @@
                 cargo-build-sbf --version
                 solana-test-validator --version
                 spl-token --version
+                shank --version
                 mkdir $out
               '';
         };
