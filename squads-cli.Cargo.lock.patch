@@ -1,7 +1,7 @@
-diff --git a/cli/Cargo.lock b/cli/Cargo.lock
+diff --git a/Cargo.lock b/Cargo.lock
 index 0c04ff7..b5c13ae 100644
---- a/cli/Cargo.lock
-+++ b/cli/Cargo.lock
+--- a/Cargo.lock
++++ b/Cargo.lock
 @@ -2362,6 +2362,12 @@ dependencies = [
   "num-traits",
  ]
