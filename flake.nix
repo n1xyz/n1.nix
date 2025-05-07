@@ -18,6 +18,7 @@
           inherit agave-platform-tools;
         };
         shank = pkgs.callPackage ./shank.nix { };
+        squads-cli = pkgs.callPackage ./squads-cli.nix { };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -55,6 +56,7 @@
                 solana-test-validator --version
                 spl-token --version
                 shank --version
+                squads-multisig-cli --help
                 mkdir $out
               '';
         };
