@@ -4,8 +4,7 @@ let
   rev = "4f864f8ff1bfabaa0d7367ae33de085e9fe202cf"; # Specific commit
   srcHash = "sha256-30rDBZhPLxOmxBt3vHhI3D4O5EMPd0rDOne2Z0coRZU=";
   cargoPatches = [ ./squads-cli.Cargo.lock.patch ];
-  cargoHash =
-    "sha256-qkpPLqoFeUiQj8eyvu+4PDZSsnJCYGeWT8Ie9uC6am4="; # Will be updated after build
+  cargoHash = "sha256-qkpPLqoFeUiQj8eyvu+4PDZSsnJCYGeWT8Ie9uC6am4=";
 in rustPlatform.buildRustPackage {
   pname = "squads-cli";
   inherit version cargoHash;
