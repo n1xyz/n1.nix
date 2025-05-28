@@ -17,6 +17,7 @@
         agave-cli = pkgs.callPackage ./agave-cli.nix { inherit agave-platform-tools; };
         shank = pkgs.callPackage ./shank.nix { };
         anchor = pkgs.callPackage ./anchor.nix { };
+        squads-cli = pkgs.callPackage ./squads-cli.nix { };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -55,6 +56,7 @@
                 spl-token --version
                 shank --version
                 anchor --version
+                squads-multisig-cli --help
                 mkdir $out
               '';
         };
