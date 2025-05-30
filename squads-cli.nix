@@ -7,30 +7,19 @@
   openssl,
   udev,
   darwin,
-}:
-let
-  version = "4.0.0";
-  rev = "4f864f8ff1bfabaa0d7367ae33de085e9fe202cf"; # Specific commit
-  srcHash = "sha256-30rDBZhPLxOmxBt3vHhI3D4O5EMPd0rDOne2Z0coRZU=";
-  cargoHash = "sha256-gD7WzWMadmVLaK9dn55WBsOi5rqFPavJHBq0RZSBbdw=";
-in
-rustPlatform.buildRustPackage {
+}: rustPlatform.buildRustPackage {
   pname = "squads-cli";
-  inherit version cargoHash;
+  version = "0.1.4";
 
   src = fetchFromGitHub {
-    owner = "Squads-Protocol";
-    repo = "v4";
-    inherit rev;
-    hash = srcHash;
+    owner = "n1xyz";
+    repo = "squads-v4";
+    rev = "112e8b702be9c67d29916645b9d3abd45cecbeba";
+    hash = "sha256-9qkFxaWsxMHtbd1YBQ20VD0MVHyiCWIC4nZNGKN3joA=";
   };
 
+  cargoHash = "sha256-Z/USg35zm6B9iqpWaYzlJZ0NfsicIZ5D15NQ2n2S6NE=";
   sourceRoot = "source/cli";
-
-  cargoPatches = [ ./squads-cli.Cargo.lock.patch ];
-
-  # Enable vendoring to ensure we use our patched dependencies
-  useFetchCargoVendor = true;
 
   # Skip tests as they may require a Solana validator to run
   doCheck = false;
@@ -48,8 +37,7 @@ rustPlatform.buildRustPackage {
   meta = with lib; {
     description = "CLI for Squads Protocol v4";
     homepage = "https://github.com/Squads-Protocol/v4";
-    license = licenses.agpl3Only;
-    maintainers = [ ];
+    license = licenses.mit;
     platforms = platforms.unix;
     mainProgram = "squads-multisig-cli";
   };
