@@ -7,15 +7,16 @@
   openssl,
   udev,
   darwin,
-}: rustPlatform.buildRustPackage {
+}:
+rustPlatform.buildRustPackage {
   pname = "squads-cli";
   version = "0.1.4";
 
   src = fetchFromGitHub {
     owner = "n1xyz";
     repo = "squads-v4";
-    rev = "112e8b702be9c67d29916645b9d3abd45cecbeba";
-    hash = "sha256-9qkFxaWsxMHtbd1YBQ20VD0MVHyiCWIC4nZNGKN3joA=";
+    rev = "cc293c6d66900165462e4fabbc8d82aeb13c6940";
+    hash = "sha256-aDGbUbofxZ/PhxesDVvtIZQUk3o1isiVWA34pON1JIc=";
   };
 
   cargoHash = "sha256-Z/USg35zm6B9iqpWaYzlJZ0NfsicIZ5D15NQ2n2S6NE=";
