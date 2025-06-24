@@ -14,10 +14,9 @@
         lsh = pkgs.callPackage ./lsh.nix { };
         spl-token = pkgs.callPackage ./spl-token.nix { };
         agave-platform-tools = pkgs.callPackage ./agave-platform-tools.nix { };
-        agave-cli = pkgs.callPackage ./agave-cli.nix {
-          inherit agave-platform-tools;
-        };
+        agave-cli = pkgs.callPackage ./agave-cli.nix { inherit agave-platform-tools; };
         shank = pkgs.callPackage ./shank.nix { };
+        anchor = pkgs.callPackage ./anchor.nix { };
         squads-cli = pkgs.callPackage ./squads-cli.nix { };
       };
     in
@@ -56,6 +55,7 @@
                 solana-test-validator --version
                 spl-token --version
                 shank --version
+                anchor --version
                 squads-multisig-cli --help
                 mkdir $out
               '';
