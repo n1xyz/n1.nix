@@ -19,7 +19,7 @@ rustPlatform.buildRustPackage {
     hash = "sha256-aDGbUbofxZ/PhxesDVvtIZQUk3o1isiVWA34pON1JIc=";
   };
 
-  cargoHash = "sha256-Z/USg35zm6B9iqpWaYzlJZ0NfsicIZ5D15NQ2n2S6NE=";
+  cargoHash = "sha256-NXJdCOfnge7e/e8Hut8M410JLnNqghA0e4UIx2ZC0sQ=";
   sourceRoot = "source/cli";
 
   # Skip tests as they may require a Solana validator to run
