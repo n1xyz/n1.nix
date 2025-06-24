@@ -8,12 +8,12 @@
   openssl,
   libclang,
   xz,
-  python312,
+  python313,
   libedit,
   udev,
 }:
 let
-  version = "1.44";
+  version = "1.49";
 
   src =
     let
@@ -25,15 +25,15 @@ let
       {
         "x86_64-linux" = {
           url = url "linux-x86_64";
-          sha256 = "sha256:1sdk12l6fjpqx7px5vckn05gw6hs8il2zj7lzjiahxq6ss4vh6b7";
+          sha256 = "sha256:060nw0ircc0pcb484m8cp1g6338fm1684kzqfp9bpwm6282jds3h";
         };
         "aarch64-darwin" = {
           url = url "osx-aarch64";
-          sha256 = "sha256:0lckswxb4vbm4c7ab4yzmvwmfabn1lrgzxxs37shzmyxbw9hvqk6";
+          sha256 = "sha256:19vsi70zmwxh6db6y6cf5bwa5vicgmk6ivk3c0xaj7c7hdq1wrh8";
         };
         "aarch64-linux" = {
           url = url "linux-aarch64";
-          sha256 = "sha256:13ckf763pvkpnz1nail6bkg2n0zh4mrzj9nixir5y3c5xvq6nx1m";
+          sha256 = "sha256:1pvjp2b6mjlnswqbwicsyz77vbddff4laigyb9clyqj8gpg0kpr1";
         };
       }
       .${stdenv.hostPlatform.system};
@@ -47,7 +47,7 @@ let
       openssl
       libclang.lib
       xz
-      python312
+      python313
       libedit
     ] ++ lib.optionals stdenv.isLinux [ udev ];
     nativeBuildInputs = [
@@ -64,12 +64,13 @@ let
     sourceRoot = ".";
     unpackPhase = ''
       tar -xjf $src
-
-      # https://github.com/anza-xyz/platform-tools/issues/79#issuecomment-2494982009
-      rm -rf llvm/lib/python3.12
     '';
     installPhase = ''
-      cp -a  . $out
+      # https://github.com/anza-xyz/platform-tools/issues/79#issuecomment-2494982009
+      rm -rf llvm/lib/python3.10
+      rm -rf llvm/lib/python3.13
+
+      cp -a . $out
     '';
   };
 in
