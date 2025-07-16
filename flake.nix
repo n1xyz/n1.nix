@@ -10,15 +10,15 @@
     inputs@{ flake-parts, nixpkgs, ... }:
     let
       packagesFor = pkgs: rec {
-        # solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
-        # lsh = pkgs.callPackage ./lsh.nix { };
-        # spl-token = pkgs.callPackage ./spl-token.nix { };
-        # agave-platform-tools = pkgs.callPackage ./agave-platform-tools.nix { };
-        # agave-cli = pkgs.callPackage ./agave-cli.nix {
-        #   inherit agave-platform-tools;
-        # };
-        # shank = pkgs.callPackage ./shank.nix { };
-        # squads-cli = pkgs.callPackage ./squads-cli.nix { };
+        solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
+        lsh = pkgs.callPackage ./lsh.nix { };
+        spl-token = pkgs.callPackage ./spl-token.nix { };
+        agave-platform-tools = pkgs.callPackage ./agave-platform-tools.nix { };
+        agave-cli = pkgs.callPackage ./agave-cli.nix {
+          inherit agave-platform-tools;
+        };
+        shank = pkgs.callPackage ./shank.nix { };
+        squads-cli = pkgs.callPackage ./squads-cli.nix { };
         ts-proto = pkgs.callPackage ./ts-proto.nix { };
       };
     in

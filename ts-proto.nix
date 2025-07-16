@@ -41,35 +41,23 @@ stdenv.mkDerivation {
     makeWrapper
   ];
 
-  nativeCheckInputs = [
-    protobuf
-  ];
-
   installCheckInputs = [
     protobuf
   ];
 
   buildPhase = ''
     runHook preBuild
-
-    export HOME=$TMPDIR
-    yarn build
-
+    HOME=$TMPDIR yarn build
     runHook postBuild
   '';
 
   installPhase = ''
     runHook preInstall
 
-    # install the entire package structure including dependencies
-    mkdir -p $out/lib/node_modules/ts-proto
+    mkdir -p $out/bin $out/lib/node_modules/ts-proto
     cp -r build package.json protoc-gen-ts_proto node_modules $out/lib/node_modules/ts-proto/
-
-    # make the script executable
     chmod +x $out/lib/node_modules/ts-proto/protoc-gen-ts_proto
 
-    # create the binary wrapper that sets NODE_PATH
-    mkdir -p $out/bin
     makeWrapper ${nodejs}/bin/node $out/bin/protoc-gen-ts_proto \
       --add-flags "$out/lib/node_modules/ts-proto/protoc-gen-ts_proto" \
       --set NODE_PATH "$out/lib/node_modules/ts-proto/node_modules"
@@ -84,7 +72,6 @@ stdenv.mkDerivation {
   installCheckPhase = ''
     runHook preInstallCheck
 
-    # create a test proto file
     cat <<EOF > test.proto
     syntax = "proto3";
     package test;
@@ -95,15 +82,10 @@ stdenv.mkDerivation {
     }
     EOF
 
-    # test the binary works
-    export PATH=$out/bin:$PATH
-
     protoc \
       --plugin=protoc-gen-ts_proto=$out/bin/protoc-gen-ts_proto \
       --ts_proto_out=$(mktemp -d) \
       test.proto
-
-    echo "protoc-gen-ts_proto test passed"
 
     runHook postInstallCheck
   '';
