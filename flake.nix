@@ -19,6 +19,7 @@
         };
         shank = pkgs.callPackage ./shank.nix { };
         squads-cli = pkgs.callPackage ./squads-cli.nix { };
+        ts-proto = pkgs.callPackage ./ts-proto.nix { };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -41,6 +42,7 @@
           packages = packagesFor pkgs;
           formatter = pkgs.nixfmt-rfc-style;
           devShells.default = pkgs.mkShell {
+            # yarn-berry-fetcher used to compute yarn missing-hashes.json
             buildInputs = builtins.attrValues self'.packages;
           };
           checks.build-all =
