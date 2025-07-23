@@ -101,18 +101,7 @@ rustPlatform.buildRustPackage rec {
   buildInputs =
     [ openssl ]
     ++ lib.optionals stdenv.hostPlatform.isLinux [ udev ]
-    ++ lib.optionals stdenv.hostPlatform.isDarwin (
-      [
-        libcxx
-      ]
-      ++ (with darwin.apple_sdk_11_0; [
-        frameworks.IOKit
-        frameworks.Security
-        frameworks.AppKit
-        frameworks.System
-        Libsystem
-      ])
-    );
+    ++ lib.optionals stdenv.hostPlatform.isDarwin [ libcxx ];
 
   buildPhase = ''
     runHook preBuild
