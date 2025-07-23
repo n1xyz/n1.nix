@@ -19,7 +19,6 @@
         };
         shank = pkgs.callPackage ./shank.nix { };
         squads-cli = pkgs.callPackage ./squads-cli.nix { };
-        ts-proto = pkgs.callPackage ./ts-proto.nix { };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
