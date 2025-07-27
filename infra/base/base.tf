@@ -1,40 +1,3 @@
-terraform {
-  required_providers {
-    b2 = {
-      source = "Backblaze/b2"
-      version = "0.10.0"
-    }
-    latitudesh = {
-      source  = "latitudesh/latitudesh"
-      version = "1.2.0"
-    }    
-  }
-}
-
-provider "b2" {
-
-}
-
-variable "LATITUDESH_AUTH_TOKEN" {
-  type = string
-  sensitive = true
-  nullable = false  
-}
-
-variable "LATITUDESH_PROJECT" {
-  nullable = false
-  type = string
-}
-
-variable "SSH_PUBLIC_KEY" {
-  nullable = false
-  type = string
-}
-
-provider "latitudesh" {
-  auth_token = var.LATITUDESH_AUTH_TOKEN
-}
-
 data "b2_bucket" "n1-nix-public" {
   bucket_name = "n1-nix-public"
   # bucket_type = "allPublic" # must be to share with Latitude
@@ -79,20 +42,4 @@ data "b2_bucket" "n1-nix-public" {
 #     value = "https://f003.backblazeb2.com/file/${data.b2_bucket.n1-nix-public.bucket_name}/${b2_bucket_file_version.kernel_003.file_name}"
 # }
 
-resource "latitudesh_ssh_key" "latitudesh_ssh_key" {
-  project    = var.LATITUDESH_PROJECT
-  name       = "init_key"
-  public_key = var.SSH_PUBLIC_KEY
-}
 
-resource "latitudesh_server" "server" {
-  hostname         = "c2-small-x86-nixos-22-11-sao-nord"
-  # "https://f003.backblazeb2.com/file/${data.b2_bucket.n1-nix-public.bucket_name}/${b2_bucket_file_version.ipxe_003.file_name}"
-  ipxe_url = "https://raw.githubusercontent.com/latitudesh/examples/refs/heads/main/custom-images/ubuntu-24/boot.ipxe" 
-  operating_system = "ipxe"
-  plan             = "c2-small-x86"
-  project          = var.LATITUDESH_PROJECT   # MUST be ID, not name, name leads to recreation
-  site             = "SAO"  
-  ssh_keys         = [latitudesh_ssh_key.latitudesh_ssh_key.id]
-  tags = [] # must use, beause auto is [], not null
-}

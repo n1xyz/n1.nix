@@ -65,7 +65,7 @@
       environment.shellInit = ''
         sudo systemctl start nixos-install
       '';
-      systemd.user.services.nixos-install = {
+      systemd.services.nixos-install = {
         wantedBy = [ "network-online.target" ];
         after = [ "network-online.target" ];
         path = path;
@@ -73,7 +73,7 @@
         serviceConfig = {
           Type = "simple";
           Restart = "on-failure";
-          RestartSec = "30s";
+          RestartSec = "10s";
         };
         script = builtins.readFile ./nixos-install-script.sh;
       };

@@ -19,7 +19,6 @@
         ./configuration.nix
         ./shared.nix
         # "${modulesPath}/modules/profiles/qemu-guest.nix"
-        disko.nixosModules.disko
         {
           disko.devices = {
             disk = {
@@ -48,15 +47,8 @@
           };
         }
         {
-          services = {
-            getty.autologinUser = "n1";
-          };
-          boot.loader.timeout = 1;
-          boot.loader.grub = {
-            enable = true;
-            default = "0";
-            splashImage = null;
-          };
+   
+
         }
       ];
     };
