@@ -8,7 +8,7 @@
 
   outputs =
     inputs@{ flake-parts, nixpkgs, ... }:
-    let    
+    let
       packagesFor = pkgs: rec {
         solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
         spl-token = pkgs.callPackage ./spl-token.nix { };
@@ -18,23 +18,9 @@
         };
         shank = pkgs.callPackage ./shank.nix { };
         squads-cli = pkgs.callPackage ./squads-cli.nix { };
-        enforce-bun = pkgs.writeShellApplication {
-          name = "enforce-bun";
-          runtimeInputs = [ pkgs.fd ];
-          text = ''
-            f=$(
-              fd --hidden --no-ignore \
-                --exclude node_modules \
-                --exclude .git \
-                'package-lock\.json|yarn\.lock|pnpm-.*\.yaml'
-            )
-            if [ -n "$f" ]; then
-              echo >&2 "error: found files from other package managers; please use bun. files:"
-              echo >&2 "$f"
-              exit 1
-            fi
-          '';
-        };
+        build-static-release = pkgs.callPackage ./packages/build-static-release.nix { };
+        bun-enforce = pkgs.callPackage ./packages/bun-enforce.nix { };
+        external-ready = pkgs.callPackage ./packages/pc-external-ready.nix { };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
