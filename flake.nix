@@ -20,7 +20,7 @@
         squads-cli = pkgs.callPackage ./squads-cli.nix { };
         build-static-release = pkgs.callPackage ./packages/build-static-release.nix { };
         bun-enforce = pkgs.callPackage ./packages/bun-enforce.nix { };
-        external-ready = pkgs.callPackage ./packages/pc-external-ready.nix { };
+        pc-external-ready = pkgs.callPackage ./packages/pc-external-ready.nix { };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {

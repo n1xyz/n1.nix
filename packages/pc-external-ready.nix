@@ -9,7 +9,7 @@
 }:
 
 writeShellApplication rec {
-  name = "external-ready";
+  name = "pc-external-ready";
   runtimeInputs = [
     curl
     jq

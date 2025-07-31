@@ -2,6 +2,7 @@
 # `$@` all user provided parameters to cargo zigbuild
 {
   cargo-zigbuild,
+  # must have `x86_64-unknown-linux-musl` target
   rustc,
   git,
   writeShellApplication,
