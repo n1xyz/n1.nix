@@ -11,7 +11,6 @@
     let
       packagesFor = pkgs: rec {
         solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
-        lsh = pkgs.callPackage ./lsh.nix { };
         spl-token = pkgs.callPackage ./spl-token.nix { };
         agave-platform-tools = pkgs.callPackage ./agave-platform-tools.nix { };
         agave-cli = pkgs.callPackage ./agave-cli.nix {
@@ -19,6 +18,8 @@
         };
         shank = pkgs.callPackage ./shank.nix { };
         squads-cli = pkgs.callPackage ./squads-cli.nix { };
+        cargo-build-static-release = pkgs.callPackage ./packages/cargo-build-static-release.nix { };
+        bun-enforce = pkgs.callPackage ./packages/bun-enforce.nix { };
       };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -51,7 +52,6 @@
               }
               ''
                 solc --version
-                lsh --version
                 solana --version
                 cargo-build-sbf --version
                 solana-test-validator --version
