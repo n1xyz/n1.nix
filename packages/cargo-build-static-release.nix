@@ -24,10 +24,10 @@ writeShellApplication {
       exit 1
     fi
     set -x
-    # zig 0.14.0 causes ProcessFdQuotaExceeded on macos, so raise the limit.
+    # zig 0.14.0 causes ProcessFdQuotaExceeded, so raise the limit.
     # this fails if some parent process has already called `ulimit -n`, so
     # you may need to open a new shell in that case.
-    ${if stdenv.isDarwin then "ulimit -n 8192" else ""} #
+    ulimit -n 8192
     # `zig cc` sets `-Werror=date-time` which breaks some dependencies. not needed in this case
     # as this tool is not meant for reproducibility
     export CFLAGS="-Wno-error=date-time"
