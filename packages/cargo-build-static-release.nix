@@ -6,13 +6,13 @@
   rustc,
   git,
   writeShellApplication,
-  stdenv,
   # for example, to use `protoc` or `mimalloc` (it is runtime input because is needed when script runs to build)
   extra-runtimeInputs ? [ ],
+  name ? "cargo-build-static-release",
 }:
 
 writeShellApplication {
-  name = "build-static-release";
+  inherit name;
   runtimeInputs = [
     cargo-zigbuild
     rustc
