@@ -15,8 +15,8 @@ rustPlatform.buildRustPackage {
   src = fetchFromGitHub {
     owner = "n1xyz";
     repo = "squads-v4";
-    rev = "cc293c6d66900165462e4fabbc8d82aeb13c6940";
-    hash = "sha256-aDGbUbofxZ/PhxesDVvtIZQUk3o1isiVWA34pON1JIc=";
+    rev = "253ad4bfc992ef97b3f96eb2c19292ef5057123c";
+    hash = "sha256-yQNi16U8AG1oI8NV9dioraPdEN3d+/tC7DW3L8hvt0o=";
   };
 
   cargoHash = "sha256-NXJdCOfnge7e/e8Hut8M410JLnNqghA0e4UIx2ZC0sQ=";
