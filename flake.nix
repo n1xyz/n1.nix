@@ -13,10 +13,9 @@
         solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
         spl-token = pkgs.callPackage ./spl-token.nix { };
         agave-platform-tools = pkgs.callPackage ./agave-platform-tools.nix { };
-        agave-cli = pkgs.callPackage ./agave-cli.nix {
-          inherit agave-platform-tools;
-        };
+        agave-cli = pkgs.callPackage ./agave-cli.nix { inherit agave-platform-tools; };
         shank = pkgs.callPackage ./shank.nix { };
+        anchor = pkgs.callPackage ./anchor.nix { };
         squads-cli = pkgs.callPackage ./squads-cli.nix { };
         cargo-build-static-release = pkgs.callPackage ./packages/cargo-build-static-release.nix { };
         bun-enforce = pkgs.callPackage ./packages/bun-enforce.nix { };
@@ -57,6 +56,7 @@
                 solana-test-validator --version
                 spl-token --version
                 shank --version
+                anchor --version
                 squads-multisig-cli --help
                 mkdir $out
               '';
