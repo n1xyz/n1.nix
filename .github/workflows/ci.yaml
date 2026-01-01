@@ -49,3 +49,14 @@ jobs:
           name: n1
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - run: nix flake check
+
+  build-x86_64-darwin:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: n1
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      - run: nix flake check
