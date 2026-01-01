@@ -27,6 +27,10 @@ let
           url = url "linux-x86_64";
           sha256 = "sha256:060nw0ircc0pcb484m8cp1g6338fm1684kzqfp9bpwm6282jds3h";
         };
+        "x86_64-darwin" = {
+          url = url "osx-x86_64";
+          sha256 = "sha256:1lxrghwkf12vhv35yz5z285lwh01jwpdi268s1b4dbd10mcgkvvr";
+        };
         "aarch64-darwin" = {
           url = url "osx-aarch64";
           sha256 = "sha256:19vsi70zmwxh6db6y6cf5bwa5vicgmk6ivk3c0xaj7c7hdq1wrh8";
