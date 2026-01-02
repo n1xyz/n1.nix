@@ -3,10 +3,10 @@ let
   allSolanaPkgs = [
     "solana"
     "solana-faucet"
+    "solana-genesis"
     "solana-gossip"
     "agave-install"
     "solana-keygen"
-    "solana-log-analyzer"
     "solana-net-shaper"
     "agave-validator"
     "solana-test-validator"
@@ -16,18 +16,19 @@ let
     "solana-stake-accounts"
     "solana-tokens"
     "agave-watchtower"
-    "solana-genesis"
   ];
   # dev-context-only-utils
   # NOTE: keep this in sync with latest https://github.com/anza-xyz/agave/blob/5bcdd4934475fde094ffbddd3f8c4067238dc9b0/scripts/dcou-tainted-packages.sh
   allSolanaDcouPkgs = [
-    "solana-accounts-bench"
-    "solana-banking-bench"
     "agave-ledger-tool"
-    "solana-bench-tps"
+    "agave-store-histogram"
     "agave-store-tool"
-    "agave-accounts-hash-cache-tool"
+    "solana-accounts-cluster-bench"
+    "solana-banking-bench"
+    "solana-bench-tps"
     "solana-dos"
+    "solana-transaction-dos"
+    "solana-vortexor"
   ];
 in
 {
@@ -40,7 +41,7 @@ in
   udev,
   protobuf,
   libcxx,
-  rocksdb_8_11,
+  rocksdb_9_10,
   makeWrapper,
   installShellFiles,
   pkg-config,
@@ -51,30 +52,26 @@ in
   solanaDcouPkgs ? allSolanaDcouPkgs,
 }:
 let
-  # https://github.com/anza-xyz/agave/pull/4061
-  version = "eec244f";
-  hash = "sha256-m+o2aadRI2/nOu+KP/ryDMPkV3+4DpgvT81SS17avyA=";
-  # NOTE: should be 8.10.0, but let's try 8.11.0 for now
-  rocksdb = rocksdb_8_11;
+  version = "3.0.0";
+  srcHash = "sha256-jePab51kL2r6EsopKKSYOadPnc7GBoqvSk88GLf00DE=";
+  cargoHash = "sha256-hPJvIkB+tGxtUQa8JoWPHqndft0ZenjJogVYx0Vq8ZE=";
+  # rust-rocksdb v0.23.0 supports v9.9.3. on nixpkgs 9.10 is the closest.
+  # https://github.com/rust-rocksdb/rust-rocksdb/blob/v0.23.0/librocksdb-sys/Cargo.toml
+  rocksdb = rocksdb_9_10;
 in
 rustPlatform.buildRustPackage rec {
+  inherit
+    version
+    cargoHash
+    ;
+
   pname = "solana-cli";
-  inherit version;
 
   src = fetchFromGitHub {
     owner = "anza-xyz";
     repo = "agave";
-    rev = "${version}";
-    inherit hash;
-  };
-
-  cargoLock = {
-    lockFile = ./agave-cli.Cargo.lock;
-
-    outputHashes = {
-      "crossbeam-epoch-0.9.5" = "sha256-Jf0RarsgJiXiZ+ddy0vp4jQ59J9m0k3sgXhWhCdhgws=";
-      "tokio-1.29.1" = "sha256-Z/kewMCqkPVTXdoBcSaFKG5GSQAdkdpj3mAzLLCjjGk=";
-    };
+    rev = "v${version}";
+    hash = srcHash;
   };
 
   strictDeps = true;
@@ -126,7 +123,7 @@ rustPlatform.buildRustPackage rec {
           -j "$NIX_BUILD_CORES" \
           --target "${rust.envVars.rustHostPlatformSpec}" \
           --offline \
-          --manifest-path programs/bpf_loader/gen-syscall-list/Cargo.toml
+          --manifest-path syscalls/gen-syscall-list/Cargo.toml
 
       ${rust.envVars.setEnv} cargo run \
           -j "$NIX_BUILD_CORES" \
@@ -142,11 +139,16 @@ rustPlatform.buildRustPackage rec {
       --bash <($out/bin/solana completion --shell bash) \
       --fish <($out/bin/solana completion --shell fish)
 
-    mkdir -p $out/bin/sdk/sbf
-    cp -a ./sdk/sbf/* $out/bin/sdk/sbf/
+    mkdir -p $out/bin/platform-tools-sdk/sbf
+    cp -a ./platform-tools-sdk/sbf/* $out/bin/platform-tools-sdk/sbf
 
-    mkdir -p $out/bin/sdk/sbf/dependencies/platform-tools
-    cp -a ${agave-platform-tools}/* $out/bin/sdk/sbf/dependencies/platform-tools
+    # replicate platform tool installation logic. they install the platform tools
+    # to ~/.cache/solana/{version}/platform-tools and create a symlink to it. we
+    # install it to the store and create a symlink to that instead.
+    #
+    # https://github.com/anza-xyz/agave/blob/v3.0.0/platform-tools-sdk/cargo-build-sbf/src/toolchain.rs#L382
+    mkdir -p $out/bin/platform-tools-sdk/sbf/dependencies
+    ln -s ${agave-platform-tools} $out/bin/platform-tools-sdk/sbf/dependencies/platform-tools
   '';
 
   postFixup = ''
@@ -155,14 +157,14 @@ rustPlatform.buildRustPackage rec {
       --set-default RUSTC "${agave-platform-tools}/rust/bin/rustc"
   '';
 
-  # Used by build.rs in the rocksdb-sys crate. If we don't set these, it would
-  # try to build RocksDB from source.
-  ROCKSDB_LIB_DIR = "${rocksdb}/lib";
-
   # Require this on darwin otherwise the compiler starts rambling about missing
   # cmath functions
   CPPFLAGS = lib.optionals stdenv.hostPlatform.isDarwin "-isystem ${lib.getDev libcxx}/include/c++/v1";
   LDFLAGS = lib.optionals stdenv.hostPlatform.isDarwin "-L${lib.getLib libcxx}/lib";
+
+  # Used by build.rs in the rocksdb-sys crate. If we don't set these, it would
+  # try to build RocksDB from source.
+  ROCKSDB_LIB_DIR = "${rocksdb}/lib";
 
   # If set, always finds OpenSSL in the system, even if the vendored feature is enabled.
   OPENSSL_NO_VENDOR = 1;
