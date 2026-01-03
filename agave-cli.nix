@@ -1,33 +1,36 @@
 # Adapted from https://github.com/NixOS/nixpkgs/blob/edf04b75c13c2ac0e54df5ec5c543e300f76f1c9/pkgs/by-name/so/solana-cli/package.nix
 let
+  # https://github.com/anza-xyz/agave/blob/f3960f4632860b8fbae51cd419e20afaba18c34e/scripts/agave-build-lists.sh#L46-L57
+  # note: this list is newer than the one for the version installed here, but i found it easier to reference.
   allSolanaPkgs = [
-    "solana"
-    "solana-faucet"
-    "solana-gossip"
-    "agave-install"
-    "solana-keygen"
-    "solana-log-analyzer"
-    "solana-net-shaper"
-    "agave-validator"
-    "solana-test-validator"
     "cargo-build-sbf"
     "cargo-test-sbf"
-    "agave-install-init"
-    "solana-stake-accounts"
-    "solana-tokens"
+    "solana-test-validator"
+
+    "agave-install"
+    "solana"
+    "solana-keygen"
+
+    "agave-validator"
     "agave-watchtower"
+    "solana-gossip"
     "solana-genesis"
+    "solana-faucet"
+
+    "solana-log-analyzer"
+    "solana-net-shaper"
   ];
   # dev-context-only-utils
-  # NOTE: keep this in sync with latest https://github.com/anza-xyz/agave/blob/5bcdd4934475fde094ffbddd3f8c4067238dc9b0/scripts/dcou-tainted-packages.sh
   allSolanaDcouPkgs = [
-    "solana-accounts-bench"
-    "solana-banking-bench"
     "agave-ledger-tool"
-    "solana-bench-tps"
+    "agave-store-histogram"
     "agave-store-tool"
-    "agave-accounts-hash-cache-tool"
+    "solana-accounts-cluster-bench"
+    "solana-banking-bench"
+    "solana-bench-tps"
     "solana-dos"
+    "solana-transaction-dos"
+    "solana-vortexor"
   ];
 in
 {
@@ -39,12 +42,14 @@ in
   darwin,
   udev,
   protobuf,
-  libcxx,
+  clang,
+  libclang,
   rocksdb_8_11,
   makeWrapper,
   installShellFiles,
   pkg-config,
   openssl,
+  zlib,
   nix-update-script,
   agave-platform-tools,
   solanaPkgs ? allSolanaPkgs,
@@ -52,8 +57,8 @@ in
 }:
 let
   # https://github.com/anza-xyz/agave/pull/4061
-  version = "eec244f";
-  hash = "sha256-m+o2aadRI2/nOu+KP/ryDMPkV3+4DpgvT81SS17avyA=";
+  version = "2.3.13";
+  hash = "sha256-RSucqvbshaaby4fALhAQJtZztwsRdA+X7yRnoBxQvsg=";
   # NOTE: should be 8.10.0, but let's try 8.11.0 for now
   rocksdb = rocksdb_8_11;
 in
@@ -64,7 +69,7 @@ rustPlatform.buildRustPackage rec {
   src = fetchFromGitHub {
     owner = "anza-xyz";
     repo = "agave";
-    rev = "${version}";
+    rev = "v${version}";
     inherit hash;
   };
 
@@ -73,7 +78,7 @@ rustPlatform.buildRustPackage rec {
 
     outputHashes = {
       "crossbeam-epoch-0.9.5" = "sha256-Jf0RarsgJiXiZ+ddy0vp4jQ59J9m0k3sgXhWhCdhgws=";
-      "tokio-1.29.1" = "sha256-Z/kewMCqkPVTXdoBcSaFKG5GSQAdkdpj3mAzLLCjjGk=";
+      "quinn-0.11.8" = "sha256-bjO72BMpW6frEti9UdE0VAlsetgDSjF72Sq20NW0ayI=";
     };
   };
 
@@ -95,13 +100,16 @@ rustPlatform.buildRustPackage rec {
     makeWrapper
     protobuf
     pkg-config
-    rustPlatform.bindgenHook
     agave-platform-tools
   ];
-  buildInputs =
-    [ openssl ]
-    ++ lib.optionals stdenv.hostPlatform.isLinux [ udev ]
-    ++ lib.optionals stdenv.hostPlatform.isDarwin [ libcxx ];
+  buildInputs = [
+    openssl
+    zlib
+    clang
+    libclang
+    rustPlatform.bindgenHook
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isLinux [ udev ];
 
   buildPhase = ''
     runHook preBuild
@@ -142,11 +150,12 @@ rustPlatform.buildRustPackage rec {
       --bash <($out/bin/solana completion --shell bash) \
       --fish <($out/bin/solana completion --shell fish)
 
-    mkdir -p $out/bin/sdk/sbf
-    cp -a ./sdk/sbf/* $out/bin/sdk/sbf/
+    mkdir -p $out/bin/platform-tools-sdk
+    cp -r ./platform-tools-sdk/sbf $out/bin/platform-tools-sdk
 
-    mkdir -p $out/bin/sdk/sbf/dependencies/platform-tools
-    cp -a ${agave-platform-tools}/* $out/bin/sdk/sbf/dependencies/platform-tools
+    mkdir -p $out/bin/deps
+    find . -name libsolana_program.dylib -exec cp {} $out/bin/deps \;
+    find . -name libsolana_program.rlib -exec cp {} $out/bin/deps \;
   '';
 
   postFixup = ''
@@ -155,14 +164,17 @@ rustPlatform.buildRustPackage rec {
       --set-default RUSTC "${agave-platform-tools}/rust/bin/rustc"
   '';
 
+  RUSTFLAGS = "-Amismatched_lifetime_syntaxes -Adead_code -Aunused_parens";
+  LIBCLANG_PATH = "${libclang.lib}/lib";
+
   # Used by build.rs in the rocksdb-sys crate. If we don't set these, it would
   # try to build RocksDB from source.
   ROCKSDB_LIB_DIR = "${rocksdb}/lib";
 
   # Require this on darwin otherwise the compiler starts rambling about missing
   # cmath functions
-  CPPFLAGS = lib.optionals stdenv.hostPlatform.isDarwin "-isystem ${lib.getDev libcxx}/include/c++/v1";
-  LDFLAGS = lib.optionals stdenv.hostPlatform.isDarwin "-L${lib.getLib libcxx}/lib";
+  CPPFLAGS = lib.optionals stdenv.hostPlatform.isDarwin "-isystem ${lib.getInclude stdenv.cc.libcxx}/include/c++/v1";
+  LDFLAGS = lib.optionals stdenv.hostPlatform.isDarwin "-L${lib.getLib stdenv.cc.libcxx}/lib";
 
   # If set, always finds OpenSSL in the system, even if the vendored feature is enabled.
   OPENSSL_NO_VENDOR = 1;

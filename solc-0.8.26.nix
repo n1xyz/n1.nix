@@ -80,24 +80,24 @@ let
           cp ${nlohmannJson} $NIX_BUILD_TOP/source/build/deps/include/nlohmann/json.hpp
         '';
 
-        cmakeFlags =
-          [
-            "-DBoost_USE_STATIC_LIBS=OFF"
-            # Deal with some errors about double to int conversion.
-            "-DCMAKE_CXX_FLAGS=-Wno-float-conversion"
-          ]
-          ++ (if z3Support then [ "-DSTRICT_Z3_VERSION=OFF" ] else [ "-DUSE_Z3=OFF" ])
-          ++ lib.optionals (!cvc4Support) [ "-DUSE_CVC4=OFF" ];
+        cmakeFlags = [
+          "-DBoost_USE_STATIC_LIBS=OFF"
+          # Deal with some errors about double to int conversion.
+          "-DCMAKE_CXX_FLAGS=-Wno-float-conversion"
+        ]
+        ++ (if z3Support then [ "-DSTRICT_Z3_VERSION=OFF" ] else [ "-DUSE_Z3=OFF" ])
+        ++ lib.optionals (!cvc4Support) [ "-DUSE_CVC4=OFF" ];
 
         nativeBuildInputs = [ cmake ];
-        buildInputs =
-          [ boost ]
-          ++ lib.optionals z3Support [ z3 ]
-          ++ lib.optionals cvc4Support [
-            cvc4
-            cln
-            gmp
-          ];
+        buildInputs = [
+          boost
+        ]
+        ++ lib.optionals z3Support [ z3 ]
+        ++ lib.optionals cvc4Support [
+          cvc4
+          cln
+          gmp
+        ];
         nativeCheckInputs = [
           jq
           ncurses

@@ -17,7 +17,8 @@ writeShellApplication {
     cargo-zigbuild
     rustc
     git
-  ] ++ extra-runtimeInputs;
+  ]
+  ++ extra-runtimeInputs;
   text = ''
     if [ -n "$(git status --porcelain)" ]; then
       echo >&2 'dirty tree, refusing to build; stash or commit your changes'

@@ -28,5 +28,4 @@ rustPlatform.buildRustPackage {
   inherit version cargoPatches cargoHash;
   pname = "shank";
   buildAndTestSubdir = "shank-cli";
-  useFetchCargoVendor = true;
 }

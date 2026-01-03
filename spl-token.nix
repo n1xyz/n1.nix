@@ -25,7 +25,6 @@ rustPlatform.buildRustPackage {
     hash = srcHash;
   };
 
-  useFetchCargoVendor = true;
   inherit pname version cargoHash;
 
   nativeBuildInputs = [
@@ -38,7 +37,8 @@ rustPlatform.buildRustPackage {
     openssl
     rocksdb_8_11
     snappy
-  ] ++ lib.optionals stdenv.hostPlatform.isLinux [ udev ];
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isLinux [ udev ];
 
   # don't make me do this
   doCheck = false;

@@ -53,12 +53,14 @@ let
       xz
       python313
       libedit
-    ] ++ lib.optionals stdenv.isLinux [ udev ];
+    ]
+    ++ lib.optionals stdenv.isLinux [ udev ];
     nativeBuildInputs = [
       (lib.optional (!stdenv.hostPlatform.isDarwin) autoPatchelfHook)
       (lib.optional stdenv.hostPlatform.isDarwin fixDarwinDylibNames)
     ];
     autoPatchelfIgnoreMissingDeps = [
+      "libxml2.so.2"
       "libedit.so.2"
       "libpython3.10.so.1.0"
     ];
