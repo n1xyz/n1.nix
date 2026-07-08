@@ -164,7 +164,8 @@ rustPlatform.buildRustPackage rec {
       --set-default RUSTC "${agave-platform-tools}/rust/bin/rustc"
   '';
 
-  RUSTFLAGS = "-Amismatched_lifetime_syntaxes -Adead_code -Aunused_parens";
+  # https://github.com/anza-xyz/agave/commit/aa50424a8cad3894ea1666c2362a6c04a5a0f53c
+  RUSTFLAGS = "-Amismatched_lifetime_syntaxes -Adead_code -Aunused_parens -Aunused_imports -Aunused_unsafe";
   LIBCLANG_PATH = "${libclang.lib}/lib";
 
   # Used by build.rs in the rocksdb-sys crate. If we don't set these, it would
