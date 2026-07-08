@@ -1,9 +1,9 @@
 {
-  description = "Various solc and lsh versions";
+  description = "Various packages useful to us";
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
@@ -16,7 +16,6 @@
           pkgsUnstable,
         }:
         rec {
-          solc-0_8_26 = pkgs.callPackage ./solc-0.8.26.nix { };
           spl-token = pkgs.callPackage ./spl-token.nix { };
           agave-platform-tools = pkgs.callPackage ./agave-platform-tools.nix { };
           agave-cli = pkgs.callPackage ./agave-cli.nix {
@@ -63,7 +62,6 @@
                 nativeBuildInputs = builtins.attrValues self'.packages;
               }
               ''
-                solc --version
                 solana --version
                 cargo-build-sbf --version
                 solana-test-validator --version
