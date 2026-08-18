@@ -5,10 +5,6 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    rustfs = {
-      url = "github:rustfs/rustfs-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -18,7 +14,6 @@
         {
           pkgs,
           pkgsUnstable,
-          rustfsUpstream,
         }:
         rec {
           spl-token = pkgs.callPackage ./spl-token.nix { };
@@ -29,7 +24,6 @@
           axiom-cli = pkgs.callPackage ./axiom-cli.nix {
             go = pkgsUnstable.go_1_26;
           };
-          rustfs = rustfsUpstream;
           shank = pkgs.callPackage ./shank.nix { };
           squads-cli = pkgs.callPackage ./squads-cli.nix { };
           cargo-build-static-release = pkgs.callPackage ./packages/cargo-build-static-release.nix { };
@@ -55,7 +49,6 @@
           packages = packagesFor {
             inherit pkgs;
             pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.${system};
-            rustfsUpstream = inputs.rustfs.packages.${system}.default;
           };
           formatter = pkgs.nixfmt-rfc-style;
           devShells.default = pkgs.mkShell {
@@ -83,7 +76,6 @@
           packagesFor {
             pkgs = prev;
             pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.${prev.stdenv.buildPlatform.system};
-            rustfsUpstream = inputs.rustfs.packages.${prev.stdenv.buildPlatform.system}.default;
           };
 
         nixConfig = {
