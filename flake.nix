@@ -5,7 +5,10 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    rustfs.url = "github:rustfs/rustfs-flake";
+    rustfs = {
+      url = "github:rustfs/rustfs-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -26,9 +29,7 @@
           axiom-cli = pkgs.callPackage ./axiom-cli.nix {
             go = pkgsUnstable.go_1_26;
           };
-          rustfs = pkgs.callPackage ./rustfs.nix {
-            upstream = rustfsUpstream;
-          };
+          rustfs = rustfsUpstream;
           shank = pkgs.callPackage ./shank.nix { };
           squads-cli = pkgs.callPackage ./squads-cli.nix { };
           cargo-build-static-release = pkgs.callPackage ./packages/cargo-build-static-release.nix { };
