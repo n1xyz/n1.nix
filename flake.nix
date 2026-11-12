@@ -5,10 +5,14 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    inputs@{ flake-parts, ... }:
+    inputs@{ flake-parts, rust-overlay, ... }:
     let
       packagesFor =
         {
@@ -28,6 +32,13 @@
           squads-cli = pkgs.callPackage ./squads-cli.nix { };
           cargo-build-static-release = pkgs.callPackage ./packages/cargo-build-static-release.nix { };
           bun-enforce = pkgs.callPackage ./packages/bun-enforce.nix { };
+          kani = pkgs.callPackage ./kani.nix {
+            # must match `rust-toolchain-version` in the kani release bundle
+            rust-toolchain = (rust-overlay.lib.mkRustBin { } pkgs).nightly."2026-08-21".minimal.override {
+              # rustfmt formats `--concrete-playback=inplace` tests
+              extensions = [ "rustfmt" ];
+            };
+          };
         };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -67,6 +78,7 @@
                 spl-token --version
                 shank --version
                 squads-multisig-cli --help
+                cargo-kani --version
                 mkdir $out
               '';
         };
